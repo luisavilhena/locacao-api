@@ -1,5 +1,6 @@
 {
-  "id": "1",
-  "nome": "joão",
-  "aluguel": "300"
+  "id": 1,
+  "nome": "carlos",
+  "endereco": "Rua São Vicente de Paulo",
+  "valor": "300"
 }

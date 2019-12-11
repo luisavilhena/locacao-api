@@ -93,9 +93,37 @@ server.on("request", (request, response) => {
         response.end(html, "utf8");
       });
     }
+  } else if (parsedUrl.path == "/lista?valorMinimo=" + parsedUrl.query.valorMinimo + "&valorMaximo=" + parsedUrl.query.valorMaximo) {
+    const nomeArquivos = fs.readdirSync(__dirname + "/dados/inquilinos");
+    // const objetosNomeArquivos = JSON.stringify(nomeArquivos));
+    // function cadaArquivo (item) {
+    //   response.end(item)
+    // }
+    // valorMinimo = parsedUrl.query.valor
+
+    let guardaItem = '';
+    nomeArquivos.forEach(function (item){
+
+      let filePath = __dirname + "/dados/inquilinos/" + item;
+      let read = fs.readFileSync(filePath, 'utf8')
+      let objeto = JSON.parse(read)
+      let creat = `
+      <code><ul><li> ${objeto.nome} </li><li>${objeto.valor} </li></ul></code>
+      `
+      if(parseInt(objeto.valor) >= parseInt(parsedUrl.query.valorMinimo) && parseInt(objeto.valor) <= parseInt(parsedUrl.query.valorMaximo)) {
+        guardaItem = creat + guardaItem 
+      } else {
+        return
+      }
+    })
+    response.end(guardaItem)
+
   } else {
     response.end("erro: pathname desconhecido");
   }
+  console.log(parsedUrl.path)
+  console.log("/lista?valorMinimo=" + parsedUrl.query.valorMinimo + "&valorMaximo=" + parsedUrl.query.valorMaximo)
+  console.log(parsedUrl.query.valorMaximo)
 });
 
 // Outra coisa, ao inves de você ficar concatenando o código com 'string' + variael + 'string', você pude usar assim:
