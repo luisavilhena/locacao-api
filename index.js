@@ -6,7 +6,7 @@ const server = http.createServer();
 //criar link no ver e no criar que volte para a página do formulário
 //h1 para resultado de nome e h2 para resultado de aluguel quando o json é mostrado na tela na url "ver"
 
-// Aqui você tem o controle de como o servidor vai retornar a pagina para o navegador, o que eu aconselho, é cirar um elemento html para cada propriedade do json
+// Aqui tem o controle de como o servidor vai retornar a pagina para o navegador, o que eu aconselho, é cirar um elemento html para cada propriedade do json
 
 // Isso quer dizer que toda vez que o navegador fazer uma requisição em alguma pagina, era passar por essa função
 server.on("request", (request, response) => {
@@ -50,10 +50,7 @@ server.on("request", (request, response) => {
         response.end(html, "utf8");
       });
     }
-  } 
-  // ///////////////////////////////
-  // SE A URL FOR /CRIAR
-  else if (parsedUrl.pathname == "/criar") {
+  } else if (parsedUrl.pathname == "/criar") {
     const itensExistente = fs.readdirSync(__dirname + "/dados/inquilinos");
     const numeroDosItensExistentes = itensExistente.length;
     const proximoNumeroExistente = numeroDosItensExistentes + 1;
@@ -62,7 +59,10 @@ server.on("request", (request, response) => {
       id: proximoNumeroExistente,
       nome: parsedUrl.query.nome,
       endereco: parsedUrl.query.endereco,
-      valor: parsedUrl.query.valor
+      valor: parsedUrl.query.valor,
+      quantidade_de_pessoas: parsedUrl.query.quantidade_de_pessoas,
+      quantidade_de_criancas: parsedUrl.query.quantidade_de_criancas,
+      quantidade_de_comodos:parsedUrl.query.quantidade_de_comodos
     };
 
     //////////////////////////////
@@ -110,6 +110,7 @@ server.on("request", (request, response) => {
       let creat = `
       <code><ul><li> ${objeto.nome} </li><li>${objeto.valor} </li></ul></code>
       `
+      //Compara os valores para depois printar na tela
       if(parseInt(objeto.valor) >= parseInt(parsedUrl.query.valorMinimo) && parseInt(objeto.valor) <= parseInt(parsedUrl.query.valorMaximo)) {
         guardaItem = creat + guardaItem 
       } else {
@@ -117,7 +118,10 @@ server.on("request", (request, response) => {
       }
     })
     response.end(guardaItem)
-
+  } else if (parsedUrl.path == "/perfil") {
+    renderVer(function(html) {
+      response.end(html, "utf8");
+    });
   } else {
     response.end("erro: pathname desconhecido");
   }
@@ -126,22 +130,26 @@ server.on("request", (request, response) => {
   console.log(parsedUrl.query.valorMaximo)
 });
 
-// Outra coisa, ao inves de você ficar concatenando o código com 'string' + variael + 'string', você pude usar assim:
+//  Ao inves de você ficar concatenando o código com 'string' + variael + 'string', você pude usar assim:
 function renderInquilino(dados) {
-  // Use aspas invertidas (ali debaixo do ESC)
+  // Usar aspas invertidas
   const objeto = JSON.parse(dados);
   return `
     <style type="text/css"> code{ white-space: pre-wrap; background-color: red; </style><code> <h1>${objeto.nome}</h1><h2>${objeto.endereco}</h2><h2>${objeto.valor}</h2> <a href="/ver"> link </a> </code>
   `;
 }
-
+//Por que a  resposta é undefined?????
+function renderTodoOPerfil() {
+  fs.readFileSync(__dirname + "/dados/inquilinos/1.json", "utf8")
+}
+console.log(renderTodoOPerfil())
 function renderVer(callback) {
   fs.readFile(__dirname + "/ui/ver-inquilino.html", "utf8", (err, data) => {
     if (err) {
       console.log(err, "erro");
       return;
     } else {
-      // E aqui você vai montar o HTML a ser retornado de acordo com os dados do JSON carregado
+      // E aqui  monta o HTML a ser retornado de acordo com os dados do JSON carregado
       callback(data);
     }
   });
@@ -153,7 +161,7 @@ function renderCriar(callback) {
       console.log(err, "erro");
       return;
     } else {
-      // E aqui você vai montar o HTML a ser retornado de acordo com os dados do JSON carregado
+      // E aqui  monta o HTML a ser retornado de acordo com os dados do JSON carregado
       callback(data);
     }
   });
