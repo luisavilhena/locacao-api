@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Filtragem de inquilino</title>
+</head>
+<style>
+  .flex {
+    display: flex;
+  }
+</style>
+<body>
+  <form action="http://localhost:8080/filtragem" method="get">
+    <h3>Valor: </h3>
+    <div class="flex">
+      <input type="text" name="valorMinimo" placeholder="valor Min">
+      <input type="text" name="valorMaximo" placeholder="valor Max">
+    </div>
+    <div class="flex">
+      <input type="text" name="quantidadeDePessoasMinimo" placeholder="Quantidade de pessoas min">
+      <input type="text" name="quantidadeDePessoasMaximo" placeholder="Quantidade de pessoas max">
+    </div>
+    <div class="flex">
+      <input type="text" name="quantidadeDeCriancasMinimo" placeholder="Quantidade de criancas min">
+      <input type="text" name="quantidadeDeCriancasMaximo" placeholder="Quantidade de crianças max">
+    </div>
+    <div class="flex">
+      <input type="text" name="quantidadeDeComodosMinimo" placeholder="Quantidade de comodos min">
+      <input type="text" name="quantidadeDeComodosMaximo" placeholder="Quantidade de comodos max">
+    </div>
+    <button type="submit">Enviar</button>
+  </form>
+</body>
+</html>

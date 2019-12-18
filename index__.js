@@ -29,7 +29,6 @@ server.on("request", (request, response) => {
   if (parsedUrl.pathname == "/ver") {
     ///////////////////////////////////////////
     // SE A URL TIVER UM ID, CARREGUE O JSON E PRINTE NA TELA
-    console.log(parsedUrl.query.id)
     if (parsedUrl.query.id) {
       fs.readFile(
         __dirname + "/dados/inquilinos/" + parsedUrl.query.id + ".json",
@@ -75,9 +74,7 @@ server.on("request", (request, response) => {
       fs.writeFile(filePath, JSON.stringify(dados, null, "  "), err => {
         if (err) {
           console.log("Erro");
-          return
         } else {
-          console.log('sim')
           fs.readFile(filePath, "utf8", (err, data) => {
             if (err) {
               console.log(err, "erro");
@@ -125,133 +122,56 @@ server.on("request", (request, response) => {
     renderFiltrar(function(html) {
       response.end(html, "utf8");
     });
-  } else if (parsedUrl.pathname == "/filtragem") {
+  } else if(parsedUrl.pathname == "/filtragem") {
     const nomeTodosOsArquivos = fs.readdirSync(__dirname + "/dados/inquilinos")
 
     const valorMinimo = parsedUrl.query.valorMinimo ? parseInt(parsedUrl.query.valorMinimo) : null
     const valorMaximo = parsedUrl.query.valorMaximo ? parseInt(parsedUrl.query.valorMaximo) : null
-    const quantidadeDePessoasMinimo = parsedUrl.query.quantidadeDePessoasMinimo ? parseInt(parsedUrl.query.quantidadeDePessoasMinimo) : null
-    const quantidadeDePessoasMaximo = parsedUrl.query.quantidadeDePessoasMaximo ? parseInt(parsedUrl.query.quantidadeDePessoasMaximo) : null
-    const quantidadeDeCriancasMinimo = parsedUrl.query.quantidadeDeCriancasMinimo ? parseInt(parsedUrl.query.quantidadeDeCriancasMinimo) : null
-    const quantidadeDeCriancasMaximo = parsedUrl.query.quantidadeDeCriancasMaximo ? parseInt(parsedUrl.query.quantidadeDeCriancasMaximo) : null
-    const quantidadeDeComodosMinimo = parsedUrl.query.quantidadeDeComodosMinimo ? parseInt(parsedUrl.query.quantidadeDeComodosMinimo) : null
-    const quantidadeDeComodosMaximo = parsedUrl.query.quantidadeDeComodosMaximo ? parseInt(parsedUrl.query.quantidadeDeComodosMaximo) : null
+
+
+    console.log({
+      valorMinimo,
+      valorMaximo,
+    })
+
     let guardaConteudoDosArquivos = "";
-    console.log('quantidade de cômodos', quantidadeDeComodosMinimo, quantidadeDeComodosMaximo)
     nomeTodosOsArquivos.forEach(function(item){
       let caminhoDoArquivo = __dirname + "/dados/inquilinos/" + item;
       let ler = fs.readFileSync(caminhoDoArquivo, 'utf8')
       let novoObjeto = JSON.parse(ler)
       let criar = `
-      <code>
-        <ul>
-          <li>${novoObjeto.nome}</li>
-          <li>${novoObjeto.valor}</li>
-          <li>${novoObjeto.quantidade_de_pessoas}</li>
-          <li>${novoObjeto.quantidade_de_criancas}</li>
-          <li>${novoObjeto.quantidade_de_comodos}</li>
-          <a href="/verPerfil?id=${novoObjeto.id}"> link </a>
-        </ul>
-      </code>
+      <code><ul><li> ${novoObjeto.nome} </li><li>${novoObjeto.valor} </li></ul></code>
       `
 
-      // if (novoObjeto.quantidade_de_comodos) {
-
-      //   console.log({
-      //     'novoObjeto.quantidade_de_comodos': parseInt(novoObjeto.quantidade_de_comodos),
-      //     quantidadeDeComodosMinimo,
-      //     quantidadeDeComodosMaximo,
-      //     typeMin: typeof quantidadeDeComodosMinimo,
-      //     typeMax: typeof quantidadeDeComodosMaximo,
-      //     condicaoMinima: (parseInt(novoObjeto.quantidade_de_comodos) >= quantidadeDeComodosMinimo),
-      //     condicaoMaxima: (parseInt(novoObjeto.quantidade_de_comodos) <= quantidadeDeComodosMaximo)
-      //   })
-      // }
-      // console.log('quantidade minima', parseInt(novoObjeto.quantidade_de_comodos))
-      // console.log('quantidade maxima', parseInt(novoObjeto.quantidade_de_comodos))
       if((valorMinimo === null || parseInt(novoObjeto.valor) >= valorMinimo) &&
-        (valorMaximo === null || parseInt(novoObjeto.valor) <= valorMaximo) && 
-        (quantidadeDePessoasMinimo === null || parseInt(novoObjeto.quantidade_de_pessoas) >= quantidadeDePessoasMinimo) &&
-        (quantidadeDePessoasMaximo === null || parseInt(novoObjeto.quantidade_de_pessoas) <= quantidadeDePessoasMaximo) &&
-        (quantidadeDeCriancasMinimo === null || parseInt(novoObjeto.quantidade_de_criancas) >= quantidadeDeCriancasMinimo) &&
-        (quantidadeDeCriancasMaximo === null || parseInt(novoObjeto.quantidade_de_criancas) <= quantidadeDeCriancasMaximo) &&
-        (quantidadeDeComodosMinimo === null || parseInt(novoObjeto.quantidade_de_comodos) >= quantidadeDeComodosMinimo) &&
-        (quantidadeDeComodosMaximo === null || parseInt(novoObjeto.quantidade_de_comodos) <= quantidadeDeComodosMaximo)
-      ){
+         (valorMaximo === null || parseInt(novoObjeto.valor) <= valorMaximo)) {
         guardaConteudoDosArquivos = criar + guardaConteudoDosArquivos 
       } else {
         return
       }
     })
     response.end(guardaConteudoDosArquivos)
+
   } else if (parsedUrl.path == "/verPerfil?id=" + parsedUrl.query.id) {
-    fs.readFile(__dirname + "/dados/inquilinos/" + parsedUrl.query.id + ".json", "utf8",(err, data) => {
-      if (err) {
-        console.log(err, "erro");
-        return;
-      } else {
-        // E aqui você vai montar o HTML a ser retornado de acordo com os dados do JSON carregado
-        response.end(renderPerfilCompleto(data), "utf8");
-      }
-    });
-  } else if (parsedUrl.path == "/delete?id=" + parsedUrl.query.id) {
-    let id = parsedUrl.query.id
-    let filePath = __dirname + "/dados/inquilinos/" + id + '.json'
-    if(fs.readFileSync(filePath)) {
-      fs.unlinkSync(filePath)
-    } else {
-      console.log('esse arquivo não existe')
-    }
-  }
-
-
-
-
-  /////////////////////////
-  ///Entidade pagamento////
-  /////////////////////////
-  
-  else if(parsedUrl.pathname == "/criar-pagamento"){
-    const dadosPagamento = {
-      id: parsedUrl.query.id,
-      nome: parsedUrl.query.nome,
-      mes: parsedUrl.query.mes,
-      valor: parsedUrl.query.valor
-    }
-    if (parsedUrl.query.id) {
-      fs.writeFile(__dirname + "/dados/pagamentos/"+ parsedUrl.query.id + ".json",
-      JSON.stringify(dadosPagamento, null, ' '),
-      err => {
+      fs.readFile(__dirname + "/dados/inquilinos/" + parsedUrl.query.id + ".json", "utf8",(err, data) => {
         if (err) {
-          console.log(err, "erro")
+          console.log(err, "erro");
+          return;
         } else {
-          console.log('oi')
-          fs.readFile(__dirname + "/dados/pagamentos/" + parsedUrl.query.id + ".json",
-          "utf8",
-          (err, data) => {
-            if (err) {
-              console.log(err, "data")
-            } else {
-              response.end(renderFilePagamentos(data))
-            }
-          })
+          // E aqui você vai montar o HTML a ser retornado de acordo com os dados do JSON carregado
+          response.end(renderPerfilCompleto(data), "utf8");
         }
-      })
-    } else {
-      renderCriarPagamento(function(html){
-        response.end(html, "utf8")
-      })
-    }
+      }
+    );
   }
-
   else {
     response.end("erro: pathname desconhecido");
   }
-  // console.log(parsedUrl.pathname)
-  // console.log(parsedUrl.path)
-  // console.log("/filtragem?valorMinimo=" + parsedUrl.query.valorMinimo + "&valorMaximo=" + parsedUrl.query.valorMaximo)
-  // console.log(parsedUrl.query.valorMaximo)
-  // console.log("teste", "/verPerfil?id=" + parsedUrl.query.id)
+  console.log(parsedUrl.pathname)
+  console.log(parsedUrl.path)
+  console.log("/filtragem?valorMinimo=" + parsedUrl.query.valorMinimo + "&valorMaximo=" + parsedUrl.query.valorMaximo)
+  console.log(parsedUrl.query.valorMaximo)
+  console.log("teste", "/verPerfil?id=" + parsedUrl.query.id)
 });
 
 //  Ao inves de você ficar concatenando o código com 'string' + variael + 'string', você pude usar assim:
@@ -259,18 +179,7 @@ function renderInquilino(dados) {
   // Usar aspas invertidas
   const objeto = JSON.parse(dados);
   return `
-    <style type="text/css"> code{ white-space: pre-wrap;</style><code> <h1>${objeto.nome}</h1><h2>${objeto.endereco}</h2><h2>${objeto.valor}</h2> 
-    <a href="/verPerfil?id=${objeto.id}"> link </a> 
-    <a href="/delete?id=${objeto.id}"> delete </a>
-    </code>
-  `;
-}
-function renderFilePagamentos(dados) {
-  // Usar aspas invertidas
-  const objeto = JSON.parse(dados);
-  return `
-    <style type="text/css"> code{ white-space: pre-wrap;</style><code> <h1>${objeto.id}</h1><h3>${objeto.nome}</h3><h3>${objeto.mes}</h3><h3>${objeto.valor}</h3>
-    </code>
+    <style type="text/css"> code{ white-space: pre-wrap; background-color: red; </style><code> <h1>${objeto.nome}</h1><h2>${objeto.endereco}</h2><h2>${objeto.valor}</h2> <a href="/verPerfil?id=${objeto.id}"> link </a> </code>
   `;
 }
 
@@ -294,7 +203,7 @@ function renderPerfilCompleto(dados) {
 }
 
 function renderVer(callback) {
-  fs.readFile(__dirname + "/ui/inquilinos/ver-inquilino.html", "utf8", (err, data) => {
+  fs.readFile(__dirname + "/ui/ver-inquilino.html", "utf8", (err, data) => {
     if (err) {
       console.log(err, "erro");
       return;
@@ -306,7 +215,7 @@ function renderVer(callback) {
 }
 
 function renderCriar(callback) {
-  fs.readFile(__dirname + "/ui/inquilinos/novo-inquilino.html", "utf8", (err, data) => {
+  fs.readFile(__dirname + "/ui/novo-inquilino.html", "utf8", (err, data) => {
     if (err) {
       console.log(err, "erro");
       return;
@@ -318,7 +227,7 @@ function renderCriar(callback) {
 }
 
 function renderFiltrar(callback) {
-  fs.readFile(__dirname + "/ui/inquilinos/filtragem-inquilino.html", "utf8", (err, data) => {
+  fs.readFile(__dirname + "/ui/filtragem-inquilino.html", "utf8", (err, data) => {
     if(err) {
       console.log(err, "erro");
       return;
@@ -327,16 +236,5 @@ function renderFiltrar(callback) {
     }
   })
 }
-
-function renderCriarPagamento(callback) {
-  fs.readFile(__dirname + "/ui/pagamentos/cadastro-pagamento.html", "utf-8", (err, data) => {
-    if(err) {
-      console.log(err, "erro")
-    } else {
-      callback(data)
-    }
-  })
-}
-
 server.listen(8080);
 
