@@ -3,14 +3,45 @@
 <head>
   <title>Novo Inquilino</title>
 </head>
+<style>
+  body {
+    background-color: #BFAAB0;
+  }
+  div {
+    display: flex;
+    align-items: center;
+  }
+  h3 {
+    width: 200px;
+  }
+</style>
 <body>
+  <h1>Preencha o perfil completo do locatário</h1>
   <form action="http://localhost:8080/criar" method="get">
-    <input type="text" name="nome" placeholder="nome">
-    <input type="text" name="endereco" placeholder="endereco">
-    <input type="text" name="valor" placeholder="valor">
-    <input type="text" name="quantidade_de_pessoas" placeholder="quantidade de pessoas">
-    <input type="text" name="quantidade_de_criancas" placeholder="quantidade de criancas">
-    <input type="text" name="quantidade_de_comodos" placeholder="quantidade de cômodos">
+    <div>
+      <h3>Nome</h3>
+      <input type="text" name="nome" placeholder="nome">
+    </div>
+    <div>
+      <h3>Endereço</h3>
+      <input type="text" name="endereco" placeholder="endereco">
+    </div>
+    <div>
+      <h3>Valor</h3>
+      <input type="text" name="valor" placeholder="valor">
+    </div>
+    <div>
+      <h3>Quantidade de pessoas</h3>
+      <input type="text" name="quantidade_de_pessoas" placeholder="quantidade de pessoas">
+    </div>
+    <div>
+      <h3>Quantidade de crianças</h3>
+      <input type="text" name="quantidade_de_criancas" placeholder="quantidade de criancas">
+    </div>
+    <div>
+      <h3>Quantidade de cômodos</h3>
+      <input type="text" name="quantidade_de_comodos" placeholder="quantidade de cômodos">
+    </div>
     <button type="submit">Enviar</button>
   </form>
 </body>

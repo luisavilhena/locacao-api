@@ -4,27 +4,45 @@
   <title>Filtragem de inquilino</title>
 </head>
 <style>
+  body {
+    background-color: #BFAAB0;
+  }
   .flex {
     display: flex;
+    align-items: center;
+  }
+  h3 {
+    width: 190px;
+  }
+  input {
+    margin-right: 20px;
   }
 </style>
 <body>
   <form action="http://localhost:8080/filtragem" method="get">
-    <h3>Valor: </h3>
+    <h1>Filtros para locatário</h1>
     <div class="flex">
+      <h3>Valor min</h3>
       <input type="text" name="valorMinimo" placeholder="valor Min">
+      <h3>Valor max</h3>
       <input type="text" name="valorMaximo" placeholder="valor Max">
     </div>
     <div class="flex">
+      <h3>Quantidade min de pessoas</h3>
       <input type="text" name="quantidadeDePessoasMinimo" placeholder="Quantidade de pessoas min">
+      <h3>Quantidade max de pessoas</h3>
       <input type="text" name="quantidadeDePessoasMaximo" placeholder="Quantidade de pessoas max">
     </div>
     <div class="flex">
+      <h3>Quantidade min de crianças</h3>
       <input type="text" name="quantidadeDeCriancasMinimo" placeholder="Quantidade de criancas min">
+      <h3>Quantidade max de crianças</h3>
       <input type="text" name="quantidadeDeCriancasMaximo" placeholder="Quantidade de crianças max">
     </div>
     <div class="flex">
+      <h3>Quantidade min de cômodos</h3>
       <input type="text" name="quantidadeDeComodosMinimo" placeholder="Quantidade de comodos min">
+      <h3>Quantidade max de cômodos</h3>
       <input type="text" name="quantidadeDeComodosMaximo" placeholder="Quantidade de comodos max">
     </div>
     <button type="submit">Enviar</button>

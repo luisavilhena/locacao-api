@@ -143,15 +143,32 @@ server.on("request", (request, response) => {
       let ler = fs.readFileSync(caminhoDoArquivo, 'utf8')
       let novoObjeto = JSON.parse(ler)
       let criar = `
+      <style>
+        code {
+          display: block;
+          margin-bottom: 50px;
+        }
+        a {
+          display: inline-block; 
+          margin-top: 10px; 
+          padding: 5px; 
+          background-color: #A6959A;
+          color: black;
+        }
+        a:hover {
+          background-color: #D9EEF4;
+        }
+      </style>
       <code>
         <ul>
-          <li>${novoObjeto.nome}</li>
-          <li>${novoObjeto.valor}</li>
-          <li>${novoObjeto.quantidade_de_pessoas}</li>
-          <li>${novoObjeto.quantidade_de_criancas}</li>
-          <li>${novoObjeto.quantidade_de_comodos}</li>
-          <a href="/verPerfil?id=${novoObjeto.id}"> link </a>
+          <h2>Perfil: </h2>
+          <li><h3>Nome: ${novoObjeto.nome}</h3></li>
+          <li><h3>Valor: ${novoObjeto.valor}</h3></li>
+          <li><h3>Quantidade de pessoas: ${novoObjeto.quantidade_de_pessoas}</h3></li>
+          <li><h3>Quantidade de crianças: ${novoObjeto.quantidade_de_criancas}</h3></li>
+          <li><h3>Quantidade de cômodos: ${novoObjeto.quantidade_de_comodos}</h3></li>
         </ul>
+        <a href="/verPerfil?id=${novoObjeto.id}">Perfil Completo</a>
       </code>
       `
 
@@ -169,6 +186,7 @@ server.on("request", (request, response) => {
       // }
       // console.log('quantidade minima', parseInt(novoObjeto.quantidade_de_comodos))
       // console.log('quantidade maxima', parseInt(novoObjeto.quantidade_de_comodos))
+    
       if((valorMinimo === null || parseInt(novoObjeto.valor) >= valorMinimo) &&
         (valorMaximo === null || parseInt(novoObjeto.valor) <= valorMaximo) && 
         (quantidadeDePessoasMinimo === null || parseInt(novoObjeto.quantidade_de_pessoas) >= quantidadeDePessoasMinimo) &&
@@ -197,10 +215,27 @@ server.on("request", (request, response) => {
   } else if (parsedUrl.path == "/delete?id=" + parsedUrl.query.id) {
     let id = parsedUrl.query.id
     let filePath = __dirname + "/dados/inquilinos/" + id + '.json'
-    if(fs.readFileSync(filePath)) {
-      fs.unlinkSync(filePath)
-    } else {
-      console.log('esse arquivo não existe')
+
+
+    /////////////////////////////
+    /////ARRUMAR O TRY/CATCH/////
+    /////////////////////////////
+    try {
+      if(fs.readFileSync(filePath)) {
+        console.log('vai apagar')
+        fs.unlinkSync(filePath)
+      // response.end(fs.readFileSync('http://localhost:8080/criar-pagamento'))
+        return
+      } else {
+        console.log('esse arquivo não existe')
+      }
+    } catch (err) {
+      if (err.code === 'ENOENT') {
+        fileExists = false
+      } else {
+        throw err
+      }
+    } finally {
     }
   }
 
@@ -259,9 +294,28 @@ function renderInquilino(dados) {
   // Usar aspas invertidas
   const objeto = JSON.parse(dados);
   return `
-    <style type="text/css"> code{ white-space: pre-wrap;</style><code> <h1>${objeto.nome}</h1><h2>${objeto.endereco}</h2><h2>${objeto.valor}</h2> 
-    <a href="/verPerfil?id=${objeto.id}"> link </a> 
-    <a href="/delete?id=${objeto.id}"> delete </a>
+    <style type="text/css">
+      a {
+        display: inline-block; 
+        margin-top: 30px; 
+        padding: 15px; 
+        background-color: #A6959A;
+        color: black;
+      }
+      a:hover {
+        background-color: #D9EEF4;
+      }
+      h1 {
+        margin-bottom: 30px;
+      }
+    </style>
+    <code>
+      <h1>Perfil:</h1>
+      <h2>Nome: ${objeto.nome}</h2>
+      <h2>Endereço: ${objeto.endereco}</h2>
+      <h2>Valor: ${objeto.valor}</h2> 
+      <a href="/verPerfil?id=${objeto.id}">Perfil Completo</a> 
+      <a href="/delete?id=${objeto.id}"> delete </a>
     </code>
   `;
 }
@@ -269,8 +323,28 @@ function renderFilePagamentos(dados) {
   // Usar aspas invertidas
   const objeto = JSON.parse(dados);
   return `
-    <style type="text/css"> code{ white-space: pre-wrap;</style><code> <h1>${objeto.id}</h1><h3>${objeto.nome}</h3><h3>${objeto.mes}</h3><h3>${objeto.valor}</h3>
-    </code>
+     <style type="text/css">
+        body {
+          background-color:#D9EEF4
+        } 
+        code { 
+          white-space: pre-wrap;
+        } 
+        li {
+          display: flex;
+        }
+      </style>
+      <body>
+        <code>
+          <ul> 
+            <li><h3>Id: </h3><h3>${objeto.id}</h3></li>
+            <li><h3>Nome: </h3><h3>${objeto.nome}</h3></li>
+            <li><h3>Mes: </h3><h3>${objeto.mes}</h3></li>
+            <li><h3>Valor: </h3><h3>${objeto.valor}</h3></li>
+          </ul>
+          <a href="/cria-pagamento"> Voltar </a>
+        </code>
+      </body>
   `;
 }
 
@@ -278,17 +352,35 @@ function renderPerfilCompleto(dados) {
   // Usar aspas invertidas
   const objeto = JSON.parse(dados);
   return `
-    <style type="text/css"> code{ white-space: pre-wrap; li {display: flex;}}</style>
+    <style type="text/css">
+      a {
+        display: inline-block; 
+        margin-top: 30px; 
+        padding: 15px; 
+        background-color: #A6959A;
+        color: black;
+      }
+      a:hover {
+        background-color: #D9EEF4;
+      }
+      h1 {
+        margin-bottom: 30px;
+      }
+      li {
+        display: flex;
+      } 
+    </style>
       <code>
-      <ul> 
-        <li><h1>Nome<h1><h1>${objeto.nome}</h1></li>
-        <li><h2>Endereço<h2><h2>${objeto.endereco}</h2></li>
-        <li><h2>Valor<h2><h2>${objeto.valor}</h2></li>
-        <li><h2>Quantidade de pessoas<h2><h2>${objeto.quantidade_de_pessoas}</h2></li>
-        <li><h2>Quantidade de crianças<h2><h2>${objeto.quantidade_de_criancas}</h2></li>
-        <li><h2>Quantidade de cômodos<h2><h2>${objeto.quantidade_de_comodos}</h2></li>
-      </ul>
-      <a href="/criar"> Voltar </a>
+        <h1>Perfil Completo:</h1>
+        <ul> 
+          <li><h3>Nome: </h3><h3>${objeto.nome}</h3></li>
+          <li><h3>Endereço: </h3><h3>${objeto.endereco}</h3></li>
+          <li><h3>Valor: </h3><h3>${objeto.valor}</h3></li>
+          <li><h3>Quantidade de pessoas: </h3><h3>${objeto.quantidade_de_pessoas}</h3></li>
+          <li><h3>Quantidade de crianças: </h3><h3>${objeto.quantidade_de_criancas}</h3></li>
+          <li><h3>Quantidade de cômodos: </h3><h3>${objeto.quantidade_de_comodos}</h3></li>
+        </ul>
+        <a href="/criar"> Voltar </a>
       </code>
   `;
 }
