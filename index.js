@@ -24,6 +24,7 @@ server.on("request", (request, response) => {
   //Ai o resultado seria parsedUrl.query.name = 'luisa'
   const parsedUrl = url.parse(request.url, true);
 
+
   // console.log(parsedUrl)
 
   if (parsedUrl.pathname == "/ver") {
@@ -212,31 +213,96 @@ server.on("request", (request, response) => {
         response.end(renderPerfilCompleto(data), "utf8");
       }
     });
-  } else if (parsedUrl.path == "/delete?id=" + parsedUrl.query.id) {
+  } else if (parsedUrl.pathname == "/delete") {
     let id = parsedUrl.query.id
     let filePath = __dirname + "/dados/inquilinos/" + id + '.json'
-
-
-    /////////////////////////////
-    /////ARRUMAR O TRY/CATCH/////
-    /////////////////////////////
     try {
-      if(fs.readFileSync(filePath)) {
-        console.log('vai apagar')
-        fs.unlinkSync(filePath)
-      // response.end(fs.readFileSync('http://localhost:8080/criar-pagamento'))
+      fs.unlinkSync(filePath)
+    } catch (err){
+      renderCriar(function(html) {
+        response.end(html, "utf8");
+      });
+    }
+
+
+
+    // try {
+    //   if(fs.readFileSync(filePath)) {
+    //     console.log('vai apagar')
+    //     
+    //     fileExists = true
+    //   // response.end(fs.readFileSync('http://localhost:8080/criar-pagamento'))
+    //     return
+    //   } else {
+    //     console.log('esse arquivo não existe')
+    //   }
+    // } catch (err) {
+    //   if (err.code === 'ENOENT') {
+    //     fileExists = false
+    //   } else {
+    //     throw err
+    //   }
+    // } finally {
+    // }
+  } else if (parsedUrl.pathname =="/editar"){
+    const filePath = __dirname + "/dados/inquilinos/" + parsedUrl.query.id + ".json"
+    const read = fs.readFileSync(filePath, "utf8")
+    const objeto = JSON.parse(read)
+    let creat = `
+    <style>
+      form {
+        display: flex;
+        flex-direction: column;.
+      }
+    </style>
+    <h1> Id: ${objeto.id} </h1>
+    <form action="http://localhost:8080/salvarEdicao" method="get">
+      <input type="hidden" name="id" value="${objeto.id}"/>
+      <label>Nome <input type="text" name="nome" value="${objeto.nome}"></label>
+      <label>Endereço <input type="text" name="endereco" value="${objeto.endereco}"></label>
+      <label>Valor <input type="text" name="valor" value="${objeto.valor}"></label>
+      <label>Quantidade de pessoas <input type="text" name="quantidade_de_pessoas" value="${objeto.quantidade_de_pessoas}"></label>
+      <label>Quantidade de crianças <input type="text" name="quantidade_de_criancas" value="${objeto.quantidade_de_criancas}"></label>
+      <label>Quantidade de cômodos <input type="text" name="quantidade_de_comodos" value="${objeto.quantidade_de_comodos}"></label>
+      <button type="submit"> Salvar </button>
+    </form>
+    `
+    response.end(creat)
+  } else if (parsedUrl.pathname == "/salvarEdicao") {
+    // response.end("salvou")
+    const filePath = __dirname + "/dados/inquilinos/" + parsedUrl.query.id + ".json"
+    // console.log(parsedUrl)
+
+    // const itensExistente = fs.readdirSync(__dirname + "/dados/inquilinos");
+    // const numeroDosItensExistentes = itensExistente.length;
+    // const proximoNumeroExistente = numeroDosItensExistentes + 1;
+
+    const dados = {
+      id: parsedUrl.query.id,
+      nome: parsedUrl.query.nome,
+      endereco: parsedUrl.query.endereco,
+      valor: parsedUrl.query.valor,
+      quantidade_de_pessoas: parsedUrl.query.quantidade_de_pessoas,
+      quantidade_de_criancas: parsedUrl.query.quantidade_de_criancas,
+      quantidade_de_comodos:parsedUrl.query.quantidade_de_comodos
+    };
+    fs.writeFile(filePath, JSON.stringify(dados, null, "  "), err => {
+      if (err) {
+        console.log("Erro");
         return
       } else {
-        console.log('esse arquivo não existe')
+        fs.readFile(filePath, "utf8", (err, data) => {
+          if (err) {
+            console.log(err, "erro");
+            return;
+          } else {
+            response.end(renderPerfilCompleto(data), "utf8");
+          }
+        });
       }
-    } catch (err) {
-      if (err.code === 'ENOENT') {
-        fileExists = false
-      } else {
-        throw err
-      }
-    } finally {
-    }
+    });
+
+    // const objeto = JSON.parse(read)
   }
 
 
@@ -311,11 +377,13 @@ function renderInquilino(dados) {
     </style>
     <code>
       <h1>Perfil:</h1>
+      <h2>ID: ${objeto.id}</h2>
       <h2>Nome: ${objeto.nome}</h2>
       <h2>Endereço: ${objeto.endereco}</h2>
       <h2>Valor: ${objeto.valor}</h2> 
       <a href="/verPerfil?id=${objeto.id}">Perfil Completo</a> 
       <a href="/delete?id=${objeto.id}"> delete </a>
+      <a href="/editar?id=${objeto.id}"> editar </a>
     </code>
   `;
 }
@@ -431,4 +499,3 @@ function renderCriarPagamento(callback) {
 }
 
 server.listen(8080);
-

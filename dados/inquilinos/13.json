@@ -1,6 +1,9 @@
 {
   "id": 13,
-  "nome": "a",
+  "nome": "luisa",
   "endereco": "Rua São Vicente de Paulo",
-  "valor": "300"
+  "valor": "300",
+  "quantidade_de_pessoas": "3",
+  "quantidade_de_criancas": "1",
+  "quantidade_de_comodos": "10"
 }
