@@ -74,4 +74,3 @@ exports.listarInquilinos = function (parametros) {
   })
   return dadosFiltrados
 }
-

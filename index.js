@@ -1,4 +1,5 @@
 const renderFunctions = require("./ui/functions/renderFunctions")
+const renderEntidade = require("./controladores/entidade")
 const http = require("http");
 const fs = require("fs");
 const url = require("url");
@@ -23,7 +24,6 @@ server.on("request", (request, response) => {
     response.end(null);
     return;
   }
-
   // Pega as variaveis da URL (tudo que vem depois do ?), exemplo: http://localhost:999/?nome=luisa
   // O resultado seria parsedUrl.query.name = 'luisa'
   const parsedUrl = url.parse(request.url, true);
@@ -55,6 +55,51 @@ server.on("request", (request, response) => {
 
   } else if (parsedUrl.pathname == "/salvar-edicao") {
     handleSalvarEdicao(parsedUrl, response)
+  }
+
+  // Entidade Inquilino
+  if (parsedUrl.pathname == "/criar-pagamento") {
+
+    // const itensExistente = fs.readdirSync(__dirname + "/dados/pagamentos", "utf8");
+    // const numeroDosItensExistentes = itensExistente.length;
+    // const proximoNumeroExistente = numeroDosItensExistentes + 1;
+    // const pathFilePagamentosCreateId = __dirname + "/dados/pagamentos/" + proximoNumeroExistente + ".json";
+    
+
+    const dadosPagamento = {
+      "nome": parsedUrl.query.nome,
+      "mes": parsedUrl.query.mes,
+      "valor": parsedUrl.query.valor
+    }
+    renderEntidade.registrarEntidade(dadosPagamento)
+
+    const lerTodosOsInquilinos = fs.readdirSync(__dirname + "/dados/inquilinos", 'utf8')
+    console.log(lerTodosOsInquilinos, "todos")
+
+
+     
+    const arrayComInquilinosDoProjeto = lerTodosOsInquilinos.map(function(item){
+      const caminhoDoIdInquilino = fs.readFileSync(__dirname + "/dados/inquilinos/" + item ,"utf8")
+      const dadosDoInquilino = JSON.parse(caminhoDoIdInquilino)
+      
+      inquilinosDoProjeto = { id: dadosDoInquilino.id, nome: dadosDoInquilino.nome }
+      // inquilinosDoProjeto = '{ id: ' + JSON.stringify(dadosDoInquilino.id) + ', ' + 'nome: ' + JSON.stringify(dadosDoInquilino.nome) + ' }';
+      // return arrayComInquilinosDoProjeto;
+      return inquilinosDoProjeto;
+    })
+
+    console.log(arrayComInquilinosDoProjeto, "todososinquilinos")
+
+
+    if(parsedUrl.query.nome) {
+      response.end(renderFunctions.renderFilePagamento(dadosPagamento))
+    } else {
+      response.end(renderFunctions.renderCriarPagamento(arrayComInquilinosDoProjeto))
+    }
+    
+
+    // const dataString = JSON.stringify(dadosPagamento, null, "  ")
+    // fs.writeFileSync(pathFilePagamentosCreateId, dataString, "utf8")
   }
 });
 

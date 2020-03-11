@@ -53,9 +53,9 @@ function renderPartialDataInquilino(dados) {
     </code>
   `;
 }
-function renderFilePagamentos(dados) {
+function renderFilePagamento(dados) {
   // Usar aspas invertidas
-  const objeto = JSON.parse(dados);
+  // const objeto = JSON.parse(dados);
   return `
      <style type="text/css">
         body {
@@ -71,12 +71,12 @@ function renderFilePagamentos(dados) {
       <body>
         <code>
           <ul> 
-            <li><h3>Id: </h3><h3>${objeto.id}</h3></li>
-            <li><h3>Nome: </h3><h3>${objeto.nome}</h3></li>
-            <li><h3>Mes: </h3><h3>${objeto.mes}</h3></li>
-            <li><h3>Valor: </h3><h3>${objeto.valor}</h3></li>
+            <li><h3>Id: </h3><h3>${dados.id}</h3></li>
+            <li><h3>Nome: </h3><h3>${dados.nome}</h3></li>
+            <li><h3>Mes: </h3><h3>${dados.mes}</h3></li>
+            <li><h3>Valor: </h3><h3>${dados.valor}</h3></li>
           </ul>
-          <a href="/cria-pagamento"> Voltar </a>
+          <a href="/criar-pagamento"> Voltar </a>
         </code>
       </body>
   `;
@@ -149,6 +149,7 @@ function renderListagemDePerfil(dados) {
   </code>
   `
 }
+
 function renderVer() {
   return fs.readFileSync(__dirname + "/../inquilinos/ver-inquilino.html", "utf8")
 
@@ -185,8 +186,51 @@ function renderFiltrar() {
   //   }
   // })
 }
-function renderCriarPagamento() {
-  return fs.readFileSync(__dirname + "/../pagamentos/cadastro-pagamento.html", "utf-8")
+function renderCriarPagamento(arrayDeInquilinos) {
+
+  let optionsHtml = ''
+
+  arrayDeInquilinos.forEach(function(item){
+    optionsHtml= optionsHtml + '<option value=' + item.id + '>' + item.id + ' - ' + item.nome + '</option>'
+  })
+  
+  return `<!DOCTYPE html>
+  <html>
+  <head>
+    <title>Cadastro pagamento</title>
+  </head>
+  <style>
+    body {
+      background-color: #BFAAB0;
+    }
+    .flex {
+      display: flex;
+      align-items: flex-start;
+      flex-direction: column;
+    }
+    h3 {
+      width: 190px;
+    }
+    input {
+      margin-bottom: 20px;
+      margin-right: 20px;
+    }
+  </style>
+  <body>
+    <form action="http://localhost:8080/criar-pagamento" method="get">
+      <h3>Cadastro de pagamentos</h3>
+      <div class="flex">
+        <select name="inquilinoId">
+          ${optionsHtml}
+        </select>
+        <input type="text" name="nome" placeholder="nome">
+        <input type="text" name="mes" placeholder="mes">
+        <input type="text" name="valor" placeholder="valor">
+        <button type="submit">Enviar</button>
+      </div>
+    </form>
+  </body>
+  </html>`
 
   // fs.readFile(__dirname + "/../pagamentos/cadastro-pagamento.html", "utf-8", (err, data) => {
   //   if(err) {
@@ -199,7 +243,7 @@ function renderCriarPagamento() {
 
 exports.renderEditar = renderEditar
 exports.renderPartialDataInquilino = renderPartialDataInquilino
-exports.renderFilePagamentos = renderFilePagamentos
+exports.renderFilePagamento = renderFilePagamento
 exports.renderPerfilCompleto = renderPerfilCompleto
 exports.renderVer = renderVer
 exports.renderCriar = renderCriar

@@ -20,6 +20,7 @@ function handleCriarInquilino (parsedUrl, response) {
       quantidade_de_criancas: parsedUrl.query.quantidade_de_criancas,
       quantidade_de_comodos:parsedUrl.query.quantidade_de_comodos
     });
+    console.log(novoInquilino.id)
 
     //versão síncrona
     // const pathFileInquilinosCreateId = __dirname + "/../dados/inquilinos/" + proximoNumeroExistente + ".json";
