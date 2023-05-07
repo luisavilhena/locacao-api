@@ -18,6 +18,6 @@
   },
   "homepage": "https://github.com/luisavilhena/locacao-api#readme",
   "dependencies": {
-    "nodemon": "^2.0.1"
+    "nodemon": "^2.0.22"
   }
 }
